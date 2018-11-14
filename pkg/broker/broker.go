@@ -75,10 +75,11 @@ func (bkr *BrokerImpl) Services(ctx context.Context) ([]brokerapi.Service, error
 		brokerapi.Service{
 			ID:                   bkr.Config.BaseGUID + "-service-" + bkr.Config.ServiceName,
 			Name:                 bkr.Config.ServiceName,
-			Description:          "Shared service for " + bkr.Config.ServiceName,
+			Description:          "Shared service for sending logs to ES in GCP",
 			Bindable:             true,
 			InstancesRetrievable: bkr.Config.FakeStateful,
 			BindingsRetrievable:  bkr.Config.FakeStateful,
+			SyslogDrainURL: bkr.Config.SysLogDrainURL,
 			Metadata: &brokerapi.ServiceMetadata{
 				DisplayName: bkr.Config.ServiceName,
 				ImageUrl:    bkr.Config.ImageURL,
@@ -87,7 +88,7 @@ func (bkr *BrokerImpl) Services(ctx context.Context) ([]brokerapi.Service, error
 				brokerapi.ServicePlan{
 					ID:          bkr.Config.BaseGUID + "-plan-" + bkr.Config.ServicePlan,
 					Name:        bkr.Config.ServicePlan,
-					Description: "Shared service for " + bkr.Config.ServiceName,
+					Description: "Shared service for sending logs to ES in GCP",
 					Free:        &bkr.Config.Free,
 				},
 			},
