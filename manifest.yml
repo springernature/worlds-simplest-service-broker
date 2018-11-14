@@ -1,16 +1,18 @@
 applications:
-- name: my-broker
+- name: app-logging-broker
   disk_quota: 256M
+  routes:
+  - route: app-logging-broker.live.cf.springer-sbm.com
   buildpacks:
   - go_buildpack
-  stack: cflinuxfs3
+  stack: cflinuxfs2
   env:
-    GOPACKAGENAME: github.com/cloudfoundry-community/worlds-simplest-service-broker
-    GO_INSTALL_PACKAGE_SPEC: github.com/cloudfoundry-community/worlds-simplest-service-broker/cmd/worlds-simplest-service-broker
+    GOPACKAGENAME: github.com/springernature/worlds-simplest-service-broker
+    GO_INSTALL_PACKAGE_SPEC: github.com/springernature/worlds-simplest-service-broker
     BASE_GUID: F55C69BB-032A-4DAD-AAF0-8BB518D1D8F5
-    CREDENTIALS: '{"port": "4000", "host": "1.2.3.4"}'
-    SERVICE_NAME: myservice
+    SERVICE_NAME: app-logging-gcp-elk
     SERVICE_PLAN_NAME: shared
     TAGS: simple,shared
-  instances: 1
-  memory: 128M
+    SERVICE_DESCRIPTION: Shared service for sending logs to ES in GCP
+  instances: 2
+  memory: 256M
