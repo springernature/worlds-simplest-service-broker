@@ -140,6 +140,14 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
 }
 
 func (bkr *BrokerImpl) Unbind(ctx context.Context, instanceID string, bindingID string, details brokerapi.UnbindDetails, asyncAllowed bool) (brokerapi.UnbindSpec, error) {
+	appId := details.AppGUID
+	envVarF2S := make(map[string]interface{})
+    envVarF2S["F2S_DISABLE_LOGGING"]= "Removed"
+    client, _ := cfclient.NewClient(bkr.Cflogin)
+    aur := cfclient.AppUpdateResource{Environment: envVarF2S}
+    updateResp, err := client.UpdateApp(appId, aur)
+    fmt.Println("AppID: ", appId, "updateResponse: ", updateResp, "error: ", err )	
+
 	return brokerapi.UnbindSpec{}, nil
 }
 
