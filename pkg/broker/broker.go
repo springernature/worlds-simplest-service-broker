@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-
+    "github.com/cloudfoundry-community/go-cfclient"
 	"code.cloudfoundry.org/lager"
 	"github.com/pivotal-cf/brokerapi"
 )
@@ -15,6 +15,7 @@ type BrokerImpl struct {
 	Config    Config
 	Instances map[string]brokerapi.GetInstanceDetailsSpec
 	Bindings  map[string]brokerapi.GetBindingSpec
+    Cflogin   *cfclient.Config
 }
 
 type Config struct {
@@ -24,11 +25,11 @@ type Config struct {
 	Credentials    interface{}
 	Tags           string
 	ImageURL       string
-	SysLogDrainURL string
 	Free           bool
-
+	ServiceDescription string
 	FakeAsync    bool
 	FakeStateful bool
+	SysLogDrainURL string
 }
 
 func NewBrokerImpl(logger lager.Logger) (bkr *BrokerImpl) {
@@ -40,15 +41,21 @@ func NewBrokerImpl(logger lager.Logger) (bkr *BrokerImpl) {
 		Logger:    logger,
 		Instances: map[string]brokerapi.GetInstanceDetailsSpec{},
 		Bindings:  map[string]brokerapi.GetBindingSpec{},
+		Cflogin: &cfclient.Config{
+   			ApiAddress:   "https://api.live.cf.springer-sbm.com",
+    		Username:     "admin",
+    		Password:     "GFc5WsHp6p",
+  		 },
 		Config: Config{
 			BaseGUID:    getEnvWithDefault("BASE_GUID", "29140B3F-0E69-4C7E-8A35"),
 			ServiceName: getEnvWithDefault("SERVICE_NAME", "some-service-name"),
 			ServicePlan: getEnvWithDefault("SERVICE_PLAN_NAME", "shared"),
+			ServiceDescription: getEnvWithDefault("SERVICE_DESCRIPTION", "Shared service for ..."),
 			Credentials: credentials,
-			Tags:        getEnvWithDefault("TAGS", "shared,worlds-simplest-service-broker"),
+			Tags:        getEnvWithDefault("TAGS", "shared,GCP_ES_Logger"),
 			ImageURL:    os.Getenv("IMAGE_URL"),
 			Free:        true,
-
+            SysLogDrainURL: getEnvWithDefault("SYSLOG_DRAIN_URL", "syslog://1.2.3.6"),
 			FakeAsync:    os.Getenv("FAKE_ASYNC") == "true",
 			FakeStateful: os.Getenv("FAKE_STATEFUL") == "true",
 		},
@@ -67,8 +74,9 @@ func (bkr *BrokerImpl) Services(ctx context.Context) ([]brokerapi.Service, error
 		brokerapi.Service{
 			ID:                   bkr.Config.BaseGUID + "-service-" + bkr.Config.ServiceName,
 			Name:                 bkr.Config.ServiceName,
-			Description:          "Shared service for " + bkr.Config.ServiceName,
+			Description:          "Shared service for sending logs to ES in GCP",
 			Bindable:             true,
+			Requires: []brokerapi.RequiredPermission{brokerapi.PermissionSyslogDrain},
 			InstancesRetrievable: bkr.Config.FakeStateful,
 			BindingsRetrievable:  bkr.Config.FakeStateful,
 			Metadata: &brokerapi.ServiceMetadata{
@@ -79,7 +87,7 @@ func (bkr *BrokerImpl) Services(ctx context.Context) ([]brokerapi.Service, error
 				brokerapi.ServicePlan{
 					ID:          bkr.Config.BaseGUID + "-plan-" + bkr.Config.ServicePlan,
 					Name:        bkr.Config.ServicePlan,
-					Description: "Shared service for " + bkr.Config.ServiceName,
+					Description: "Shared service for sending logs to ES in GCP",
 					Free:        &bkr.Config.Free,
 				},
 			},
@@ -116,6 +124,17 @@ func (bkr *BrokerImpl) GetInstance(ctx context.Context, instanceID string) (spec
 
 func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID string, details brokerapi.BindDetails, asyncAllowed bool) (brokerapi.Binding, error) {
 	var parameters interface{}
+	appId := details.AppGUID
+	envVarF2S := make(map[string]interface{})
+    envVarF2S["F2S_DISABLE_LOGGING"]= "true"
+    client, _ := cfclient.NewClient(bkr.Cflogin)
+    appEnv, _ := client.GetAppEnv(appId)
+    for k, v := range appEnv.Environment {
+    envVarF2S[k] = v
+	}
+    aur := cfclient.AppUpdateResource{Environment: envVarF2S}
+    updateResp, err := client.UpdateApp(appId, aur)
+    fmt.Println("AppID: ", appId, "updateResponse: ", updateResp, "error: ", err , "APP_ENV: ", appEnv.Environment)
 	json.Unmarshal(details.GetRawParameters(), &parameters)
 	bkr.Bindings[bindingID] = brokerapi.GetBindingSpec{
 		Credentials: bkr.Config.Credentials,
@@ -123,6 +142,7 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
 	}
 	return brokerapi.Binding{
 		Credentials: bkr.Config.Credentials,
+		SyslogDrainURL: bkr.Config.SysLogDrainURL , 
 	}, nil
 }
 
