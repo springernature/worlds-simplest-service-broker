@@ -76,7 +76,7 @@ func (bkr *BrokerImpl) Services(ctx context.Context) ([]brokerapi.Service, error
 			Name:                 bkr.Config.ServiceName,
 			Description:          "Shared service for sending logs to ES in GCP",
 			Bindable:             true,
-			Requires: "syslog_drain",
+			Requires: ["syslog_drain"],
 			InstancesRetrievable: bkr.Config.FakeStateful,
 			BindingsRetrievable:  bkr.Config.FakeStateful,
 			Metadata: &brokerapi.ServiceMetadata{
