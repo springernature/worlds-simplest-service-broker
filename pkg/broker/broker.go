@@ -15,6 +15,7 @@ type BrokerImpl struct {
 	Config    Config
 	Instances map[string]brokerapi.GetInstanceDetailsSpec
 	Bindings  map[string]brokerapi.GetBindingSpec
+    Cflogin   &cfclient.Config
 }
 
 type Config struct {
@@ -40,6 +41,11 @@ func NewBrokerImpl(logger lager.Logger) (bkr *BrokerImpl) {
 		Logger:    logger,
 		Instances: map[string]brokerapi.GetInstanceDetailsSpec{},
 		Bindings:  map[string]brokerapi.GetBindingSpec{},
+		Cflogin: &cfclient.Config{
+   			ApiAddress:   "https://api.dev.cf.springer-sbm.com",
+    		Username:     "admin",
+    		Password:     "JtEGbqA1qk",
+  		}
 		Config: Config{
 			BaseGUID:    getEnvWithDefault("BASE_GUID", "29140B3F-0E69-4C7E-8A35"),
 			ServiceName: getEnvWithDefault("SERVICE_NAME", "some-service-name"),
