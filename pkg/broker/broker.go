@@ -46,7 +46,7 @@ func NewBrokerImpl(logger lager.Logger) (bkr *BrokerImpl) {
     		Username:     "admin",
     		Password:     "JtEGbqA1qk",
   		 },
-  		SysLogDrainURL: getEnvWithDefault("SYSLOG_DRAIN_URL", ""),
+  		SysLogDrainURL: "http://10.230.11.186:5514",
 		Config: Config{
 			BaseGUID:    getEnvWithDefault("BASE_GUID", "29140B3F-0E69-4C7E-8A35"),
 			ServiceName: getEnvWithDefault("SERVICE_NAME", "some-service-name"),
