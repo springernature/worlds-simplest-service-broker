@@ -138,7 +138,7 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
 	}
 	return brokerapi.Binding{
 		Credentials: bkr.Config.Credentials,
-		SyslogDrainURL:  bkr.SyslogDrainURL,
+		SyslogDrainURL:  bkr.SysLogDrainURL,
 	}, nil
 }
 
