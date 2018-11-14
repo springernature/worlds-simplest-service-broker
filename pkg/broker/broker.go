@@ -16,6 +16,7 @@ type BrokerImpl struct {
 	Instances map[string]brokerapi.GetInstanceDetailsSpec
 	Bindings  map[string]brokerapi.GetBindingSpec
     Cflogin   *cfclient.Config
+    SysLogDrainURL string
 }
 
 type Config struct {
@@ -25,7 +26,6 @@ type Config struct {
 	Credentials    interface{}
 	Tags           string
 	ImageURL       string
-	SysLogDrainURL string
 	Free           bool
 	ServiceDescription string
 	FakeAsync    bool
@@ -46,11 +46,11 @@ func NewBrokerImpl(logger lager.Logger) (bkr *BrokerImpl) {
     		Username:     "admin",
     		Password:     "JtEGbqA1qk",
   		 },
+  		SysLogDrainURL: getEnvWithDefault("SYSLOG_DRAIN_URL", ""),
 		Config: Config{
 			BaseGUID:    getEnvWithDefault("BASE_GUID", "29140B3F-0E69-4C7E-8A35"),
 			ServiceName: getEnvWithDefault("SERVICE_NAME", "some-service-name"),
 			ServicePlan: getEnvWithDefault("SERVICE_PLAN_NAME", "shared"),
-			SysLogDrainURL: getEnvWithDefault("SYSLOG_DRAIN_URL", ""),
 			ServiceDescription: getEnvWithDefault("SERVICE_DESCRIPTION", "Shared service for ..."),
 			Credentials: credentials,
 			Tags:        getEnvWithDefault("TAGS", "shared,GCP_ES_Logger"),
