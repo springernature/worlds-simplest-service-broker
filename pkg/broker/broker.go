@@ -15,7 +15,7 @@ type BrokerImpl struct {
 	Config    Config
 	Instances map[string]brokerapi.GetInstanceDetailsSpec
 	Bindings  map[string]brokerapi.GetBindingSpec
-    Cflogin   &cfclient.Config
+    Cflogin   *cfclient.Config
 }
 
 type Config struct {
@@ -122,6 +122,13 @@ func (bkr *BrokerImpl) GetInstance(ctx context.Context, instanceID string) (spec
 
 func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID string, details brokerapi.BindDetails, asyncAllowed bool) (brokerapi.Binding, error) {
 	var parameters interface{}
+	appId := details.AppGUID
+	envVarF2S := make(map[string]interface{})
+    envVarF2S["F2S_DISABLE_LOGGING"]= "HOLY SHIT"
+    client, _ := cfclient.NewClient(bkr.Cflogin)
+    aur := cfclient.AppUpdateResource{Environment: m}
+    updateResp, _ := client.UpdateApp("appId", aur)
+    fmt.Printf("AppID: ", appId, "updateResponse: updateResp")
 	json.Unmarshal(details.GetRawParameters(), &parameters)
 	bkr.Bindings[bindingID] = brokerapi.GetBindingSpec{
 		Credentials: bkr.Config.Credentials,
