@@ -125,6 +125,7 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
 	appId := details.AppGUID
 	envVarF2S := make(map[string]interface{})
     envVarF2S["F2S_DISABLE_LOGGING"]= "HOLY SHIT"
+    envVarF2S["APP_GUID"]= appId
     client, _ := cfclient.NewClient(bkr.Cflogin)
     aur := cfclient.AppUpdateResource{Environment: envVarF2S}
     updateResp, err := client.UpdateApp(appId, aur)
@@ -140,7 +141,7 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
 }
 
 func (bkr *BrokerImpl) Unbind(ctx context.Context, instanceID string, bindingID string, details brokerapi.UnbindDetails, asyncAllowed bool) (brokerapi.UnbindSpec, error) {
-	appId := details.AppGUID
+	appId := os.Getenv("APP_GUID")
 	envVarF2S := make(map[string]interface{})
     envVarF2S["F2S_DISABLE_LOGGING"]= "Removed"
     client, _ := cfclient.NewClient(bkr.Cflogin)
