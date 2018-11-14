@@ -45,7 +45,7 @@ func NewBrokerImpl(logger lager.Logger) (bkr *BrokerImpl) {
    			ApiAddress:   "https://api.dev.cf.springer-sbm.com",
     		Username:     "admin",
     		Password:     "JtEGbqA1qk",
-  		}
+  		 },
 		Config: Config{
 			BaseGUID:    getEnvWithDefault("BASE_GUID", "29140B3F-0E69-4C7E-8A35"),
 			ServiceName: getEnvWithDefault("SERVICE_NAME", "some-service-name"),
@@ -126,9 +126,9 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
 	envVarF2S := make(map[string]interface{})
     envVarF2S["F2S_DISABLE_LOGGING"]= "HOLY SHIT"
     client, _ := cfclient.NewClient(bkr.Cflogin)
-    aur := cfclient.AppUpdateResource{Environment: m}
+    aur := cfclient.AppUpdateResource{Environment: envVarF2S}
     updateResp, _ := client.UpdateApp("appId", aur)
-    fmt.Printf("AppID: ", appId, "updateResponse: updateResp")
+    fmt.Printf("AppID: ", appId, "updateResponse: ", updateResp)
 	json.Unmarshal(details.GetRawParameters(), &parameters)
 	bkr.Bindings[bindingID] = brokerapi.GetBindingSpec{
 		Credentials: bkr.Config.Credentials,
