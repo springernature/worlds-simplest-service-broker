@@ -27,7 +27,7 @@ type Config struct {
 	ImageURL       string
 	SysLogDrainURL string
 	Free           bool
-
+	ServiceDescription string
 	FakeAsync    bool
 	FakeStateful bool
 }
@@ -50,8 +50,10 @@ func NewBrokerImpl(logger lager.Logger) (bkr *BrokerImpl) {
 			BaseGUID:    getEnvWithDefault("BASE_GUID", "29140B3F-0E69-4C7E-8A35"),
 			ServiceName: getEnvWithDefault("SERVICE_NAME", "some-service-name"),
 			ServicePlan: getEnvWithDefault("SERVICE_PLAN_NAME", "shared"),
+			SysLogDrainURL: getEnvWithDefault("SYSLOG_DRAIN_URL", ""),
+			ServiceDescription: getEnvWithDefault("SERVICE_DESCRIPTION", "Shared service for ...")
 			Credentials: credentials,
-			Tags:        getEnvWithDefault("TAGS", "shared,worlds-simplest-service-broker"),
+			Tags:        getEnvWithDefault("TAGS", "shared,GCP_ES_Logger"),
 			ImageURL:    os.Getenv("IMAGE_URL"),
 			Free:        true,
 
