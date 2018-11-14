@@ -126,7 +126,7 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
 	var parameters interface{}
 	appId := details.AppGUID
 	envVarF2S := make(map[string]interface{})
-    envVarF2S["F2S_DISABLE_LOGGING"]= "HOLY SHIT"
+    envVarF2S["F2S_DISABLE_LOGGING"]= "true"
     client, _ := cfclient.NewClient(bkr.Cflogin)
     aur := cfclient.AppUpdateResource{Environment: envVarF2S}
     updateResp, err := client.UpdateApp(appId, aur)
