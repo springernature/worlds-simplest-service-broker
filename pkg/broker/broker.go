@@ -128,7 +128,7 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
     client, _ := cfclient.NewClient(bkr.Cflogin)
     aur := cfclient.AppUpdateResource{Environment: envVarF2S}
     updateResp, _ := client.UpdateApp("appId", aur)
-    fmt.FPrintf("AppID: ", appId, "updateResponse: ", updateResp)
+    fmt.Println("AppID: ", appId, "updateResponse: ", updateResp)
 	json.Unmarshal(details.GetRawParameters(), &parameters)
 	bkr.Bindings[bindingID] = brokerapi.GetBindingSpec{
 		Credentials: bkr.Config.Credentials,
