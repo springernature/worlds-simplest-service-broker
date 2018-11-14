@@ -5,11 +5,14 @@ applications:
   - go_buildpack
   stack: cflinuxfs2
   env:
-    GOPACKAGENAME: worlds-simplest-service-broker
+    GOPACKAGENAME: github.com/springernature/worlds-simplest-service-broker
+    GO_INSTALL_PACKAGE_SPEC: github.com/springernature/worlds-simplest-service-broker/cmd/worlds-simplest-service-broker
     BASE_GUID: F55C69BB-032A-4DAD-AAF0-8BB518D1D8F5
     CREDENTIALS: '{"port": "4000", "host": "1.2.3.4"}'
     SERVICE_NAME: myservice
     SERVICE_PLAN_NAME: shared
+    AUTH_USER: admin
+    AUTH_PASSWORD: admin
     TAGS: simple,shared
   instances: 1
   memory: 512M

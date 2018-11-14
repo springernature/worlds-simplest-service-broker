@@ -1,0 +1,118 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "TgO9gc7JIrSnT/T/VVzihTVPtvU=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/github.com/Masterminds/semver",
+			"path": "github.com/Masterminds/semver",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "EANi25aBAbaZQ+55yFTYoMdz0vw=",
+			"path": "github.com/cloudfoundry-community/go-cfclient",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "/j6d79OGJdC2QR4Yn2yhSS30mS8=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/github.com/cloudfoundry/gofileutils/fileutils",
+			"path": "github.com/cloudfoundry/gofileutils/fileutils",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "h1oa5QrwQwy5Vs8OabAiFb89NC4=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/github.com/golang/protobuf/proto",
+			"path": "github.com/golang/protobuf/proto",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "GtamqiJoL7PGHsN454AoffBFMa8=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/golang.org/x/net/context",
+			"path": "golang.org/x/net/context",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "aFpql3G+Nw8zkzfqLWQJNZC8pu0=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/golang.org/x/net/context/ctxhttp",
+			"path": "golang.org/x/net/context/ctxhttp",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "5+Wlq4i/9BUFndiLq5QMPvATj4w=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/golang.org/x/oauth2",
+			"path": "golang.org/x/oauth2",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "BBvAVdfMgg6RqrhBkjN1A/RfXk0=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/golang.org/x/oauth2/clientcredentials",
+			"path": "golang.org/x/oauth2/clientcredentials",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "6QPQ3ZbVfvvqSF3B++4EQvlrPfY=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/golang.org/x/oauth2/internal",
+			"path": "golang.org/x/oauth2/internal",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "nc9bMBFgXJhqeXDieUU7ZCjK8rk=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/google.golang.org/appengine/internal",
+			"path": "google.golang.org/appengine/internal",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "5PakGXEgSbyFptkhGO8MnGf7uH0=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/google.golang.org/appengine/internal/base",
+			"path": "google.golang.org/appengine/internal/base",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "3DZ+Ah5hFQb1/nh1+li2VE+kkfk=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/google.golang.org/appengine/internal/datastore",
+			"path": "google.golang.org/appengine/internal/datastore",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "HJQ4JM9YWfwIe4vmAgXC7J/1T3E=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/google.golang.org/appengine/internal/log",
+			"path": "google.golang.org/appengine/internal/log",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "hApgRLSl7w9XG2waJxdH/o0A398=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/google.golang.org/appengine/internal/remote_api",
+			"path": "google.golang.org/appengine/internal/remote_api",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "ZnEUFEjcGAVZNDPOOc+VLN7x4pI=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/google.golang.org/appengine/internal/urlfetch",
+			"path": "google.golang.org/appengine/internal/urlfetch",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		},
+		{
+			"checksumSHA1": "akOV9pYnCbcPA8wJUutSQVibdyg=",
+			"origin": "github.com/cloudfoundry-community/go-cfclient/vendor/google.golang.org/appengine/urlfetch",
+			"path": "google.golang.org/appengine/urlfetch",
+			"revision": "5dfefc0e324b09114ef8fb1bfe1dcf7932c11e41",
+			"revisionTime": "2018-10-31T14:03:25Z"
+		}
+	],
+	"rootPath": "worlds-simplest-service-broker"
+}
