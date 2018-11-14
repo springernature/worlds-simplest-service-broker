@@ -51,7 +51,7 @@ func NewBrokerImpl(logger lager.Logger) (bkr *BrokerImpl) {
 			ServiceName: getEnvWithDefault("SERVICE_NAME", "some-service-name"),
 			ServicePlan: getEnvWithDefault("SERVICE_PLAN_NAME", "shared"),
 			SysLogDrainURL: getEnvWithDefault("SYSLOG_DRAIN_URL", ""),
-			ServiceDescription: getEnvWithDefault("SERVICE_DESCRIPTION", "Shared service for ...")
+			ServiceDescription: getEnvWithDefault("SERVICE_DESCRIPTION", "Shared service for ..."),
 			Credentials: credentials,
 			Tags:        getEnvWithDefault("TAGS", "shared,GCP_ES_Logger"),
 			ImageURL:    os.Getenv("IMAGE_URL"),
