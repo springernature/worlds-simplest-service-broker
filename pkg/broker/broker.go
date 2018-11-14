@@ -79,7 +79,6 @@ func (bkr *BrokerImpl) Services(ctx context.Context) ([]brokerapi.Service, error
 			Bindable:             true,
 			InstancesRetrievable: bkr.Config.FakeStateful,
 			BindingsRetrievable:  bkr.Config.FakeStateful,
-			SyslogDrainURL: bkr.Config.SysLogDrainURL,
 			Metadata: &brokerapi.ServiceMetadata{
 				DisplayName: bkr.Config.ServiceName,
 				ImageUrl:    bkr.Config.ImageURL,
@@ -139,6 +138,7 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
 	}
 	return brokerapi.Binding{
 		Credentials: bkr.Config.Credentials,
+		SyslogDrainURL:  bkr.SyslogDrainURL,
 	}, nil
 }
 
