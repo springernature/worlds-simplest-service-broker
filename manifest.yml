@@ -1,9 +1,9 @@
 applications:
-- name: my-broker
+- name: gcp-logging-broker
   disk_quota: 256M
   buildpacks:
   - go_buildpack
-  stack: cflinuxfs3
+  stack: cflinuxfs2
   env:
     GOPACKAGENAME: github.com/cloudfoundry-community/worlds-simplest-service-broker
     GO_INSTALL_PACKAGE_SPEC: github.com/cloudfoundry-community/worlds-simplest-service-broker/cmd/worlds-simplest-service-broker

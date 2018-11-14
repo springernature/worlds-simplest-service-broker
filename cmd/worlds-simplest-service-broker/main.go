@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-
-	"github.com/cloudfoundry-community/worlds-simplest-service-broker/pkg/broker"
-
+	"https://github.com/springernature/worlds-simplest-service-broker/pkg/broker"
 	"code.cloudfoundry.org/lager"
 	"github.com/pivotal-cf/brokerapi"
 )

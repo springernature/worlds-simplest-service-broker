@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-
+    "github.com/cloudfoundry-community/go-cfclient"
 	"code.cloudfoundry.org/lager"
 	"github.com/pivotal-cf/brokerapi"
 )
