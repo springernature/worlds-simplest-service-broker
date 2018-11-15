@@ -55,7 +55,7 @@ func NewBrokerImpl(logger lager.Logger) (bkr *BrokerImpl) {
 			Tags:        getEnvWithDefault("TAGS", "shared,GCP_ES_Logger"),
 			ImageURL:    os.Getenv("IMAGE_URL"),
 			Free:        true,
-            SysLogDrainURL: getEnvWithDefault("SYSLOG_DRAIN_URL", "syslog://10.230.11.186:5514"),
+            SysLogDrainURL: getEnvWithDefault("SYSLOG_DRAIN_URL", "syslog://1.2.3.6"),
 			FakeAsync:    os.Getenv("FAKE_ASYNC") == "true",
 			FakeStateful: os.Getenv("FAKE_STATEFUL") == "true",
 		},
@@ -138,7 +138,7 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
 	}
 	return brokerapi.Binding{
 		Credentials: bkr.Config.Credentials,
-		SyslogDrainURL: "syslog://10.230.11.186:5514",
+		SyslogDrainURL: bkr.Config.SysLogDrainURL , 
 	}, nil
 }
 
