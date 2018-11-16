@@ -14,7 +14,7 @@ applications:
     AUTH_USER: admin
     AUTH_PASSWORD: admin
     TAGS: simple,shared
-    SYSLOG_DRAIN_URL: syslog://10.230.11.186:5514
+    SYSLOG_DRAIN_URL: syslog://10.230.15.245:5514
     SERVICE_DESCRIPTION: Shared service for sending logs to ES in GCP
   instances: 1
   memory: 512M
