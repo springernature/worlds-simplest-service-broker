@@ -42,9 +42,9 @@ func NewBrokerImpl(logger lager.Logger) (bkr *BrokerImpl) {
 		Instances: map[string]brokerapi.GetInstanceDetailsSpec{},
 		Bindings:  map[string]brokerapi.GetBindingSpec{},
 		Cflogin: &cfclient.Config{
-   			ApiAddress:   "https://api.dev.cf.springer-sbm.com",
+   			ApiAddress:   "https://api.live.cf.springer-sbm.com",
     		Username:     "admin",
-    		Password:     "JtEGbqA1qk",
+    		Password:     "GFc5WsHp6p",
   		 },
 		Config: Config{
 			BaseGUID:    getEnvWithDefault("BASE_GUID", "29140B3F-0E69-4C7E-8A35"),
