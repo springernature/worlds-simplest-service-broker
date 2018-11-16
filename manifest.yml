@@ -1,5 +1,5 @@
 applications:
-- name: gcp-logging-broker
+- name: app-logging-broker
   disk_quota: 256M
   buildpacks:
   - go_buildpack
