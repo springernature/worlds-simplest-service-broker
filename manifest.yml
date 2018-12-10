@@ -14,5 +14,5 @@ applications:
     SERVICE_PLAN_NAME: shared
     TAGS: simple,shared
     SERVICE_DESCRIPTION: Shared service for sending logs to ES in GCP
-  instances: 1
-  memory: 512M
+  instances: 2
+  memory: 256M
