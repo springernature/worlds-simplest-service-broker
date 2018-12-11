@@ -5,7 +5,7 @@ pipeline: ee-app-logging-servicebroker-onPrem
 repo:
   uri: git@github.com:springernature/worlds-simplest-service-broker.git
   private_key: ((github.private_key))
-	branch: cenas
+  branch: cenas
 
 tasks:
 - type: docker-compose

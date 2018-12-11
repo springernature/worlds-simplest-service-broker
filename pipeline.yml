@@ -4,7 +4,7 @@ resources:
 - name: git
   type: git
   source:
-    branch: master
+    branch: cenas
     private_key: ((github.private_key))
     uri: git@github.com:springernature/worlds-simplest-service-broker.git
 - name: slack-notification
@@ -123,7 +123,6 @@ jobs:
         AUTH_PASSWORD: ((servicebroker.password))
         AUTH_USER: ((servicebroker.user))
         CREDENTIALS: ((servicebroker.credentials))
-        SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
     attempts: 2
   - put: cf halfpipe-promote
     resource: CF dev pe dev

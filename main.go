@@ -33,6 +33,7 @@ func main() {
 	if port == "" {
 		port = "3000"
 	}
-	fmt.Println("\n\nStarting World's Simplest Service Broker on 0.0.0.0:" + port)
+	syslog := os.Getenv("SYSLOG_DRAIN_URL")
+	fmt.Println("\n\nStarting World's Simplest Service Broker on 0.0.0.0:" + port + " syslog: " + syslog)
 	logger.Fatal("http-listen", http.ListenAndServe("0.0.0.0:"+port, nil))
 }
