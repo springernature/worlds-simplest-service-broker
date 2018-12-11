@@ -2,7 +2,7 @@ applications:
 - name: app-logging-broker
   disk_quota: 256M
   routes:
-  - route: app-logging-broker.dev.cf.springer-sbm.com
+  - route: app-logging-broker-cenas.dev.cf.springer-sbm.com
   buildpacks:
   - go_buildpack
   stack: cflinuxfs2
