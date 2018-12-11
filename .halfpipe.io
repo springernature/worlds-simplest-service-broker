@@ -5,6 +5,7 @@ pipeline: ee-app-logging-servicebroker-onPrem
 repo:
   uri: git@github.com:springernature/worlds-simplest-service-broker.git
   private_key: ((github.private_key))
+	branch: cenas
 
 tasks:
 - type: docker-compose
@@ -21,7 +22,6 @@ tasks:
     AUTH_USER: ((servicebroker.user))
     AUTH_PASSWORD: ((servicebroker.password))
     CREDENTIALS: ((servicebroker.credentials))
-    SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
 
 - type: deploy-cf
   name: Deploy to CF Live
