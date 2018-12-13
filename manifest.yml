@@ -1,5 +1,5 @@
 applications:
-- name: app-logging-broker
+- name: broker-test
   disk_quota: 256M
   routes:
   - route: broker-test.live.cf.springer-sbm.com
