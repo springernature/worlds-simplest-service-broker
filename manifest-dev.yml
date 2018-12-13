@@ -14,6 +14,6 @@ applications:
     SERVICE_PLAN_NAME: shared2
     TAGS: simple,shared
     SERVICE_DESCRIPTION: Shared service for sending logs from CF DEV to ES in GCP
-    SYSLOG_DRAIN_URL: syslog://10.80.203.29:5514
+    SYSLOG_DRAIN_URL: syslog://10.80.203.28:5514
   instances: 1
   memory: 256M
