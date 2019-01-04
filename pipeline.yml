@@ -1,10 +1,10 @@
-# Generated using halfpipe cli version 1.71.1
+# Generated using halfpipe cli version 1.73.0
 groups: []
 resources:
 - name: git
   type: git
   source:
-    branch: master
+    branch: test
     private_key: ((github.private_key))
     uri: git@github.com:springernature/worlds-simplest-service-broker.git
 - name: slack-notification
@@ -19,15 +19,6 @@ resources:
     password: ((cloudfoundry.password))
     prometheusGatewayURL: prometheus-pushgateway:9091
     space: dev
-    username: ((cloudfoundry.username))
-- name: CF live pe live
-  type: cf-resource
-  source:
-    api: ((cloudfoundry.api-live))
-    org: pe
-    password: ((cloudfoundry.password))
-    prometheusGatewayURL: prometheus-pushgateway:9091
-    space: live
     username: ((cloudfoundry.username))
 resource_types:
 - name: slack-notification
@@ -93,6 +84,7 @@ jobs:
       inputs:
       - name: git
       caches:
+      - path: ../../../var/halfpipe/cache
       - path: ../../../halfpipe-cache
     attempts: 1
   on_failure:
@@ -123,7 +115,7 @@ jobs:
         AUTH_PASSWORD: ((servicebroker.password))
         AUTH_USER: ((servicebroker.user))
         CREDENTIALS: ((servicebroker.credentials))
-        SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
+        SYSLOG_DRAIN_URL: ((servicebroker.syslog_url_test))
     attempts: 2
   - put: cf halfpipe-promote
     resource: CF dev pe dev
@@ -146,49 +138,5 @@ jobs:
     params:
       command: halfpipe-cleanup
       manifestPath: git/manifest-dev.yml
-    attempts: 2
-- name: Deploy to CF Live
-  serial: true
-  plan:
-  - aggregate:
-    - get: git
-      passed:
-      - Deploy to CF Dev
-      trigger: true
-  - put: cf halfpipe-push
-    resource: CF live pe live
-    params:
-      appPath: git
-      command: halfpipe-push
-      gitRefPath: git/.git/ref
-      manifestPath: git/manifest.yml
-      testDomain: live.cf.private.springer.com
-      vars:
-        AUTH_PASSWORD: ((servicebroker.password))
-        AUTH_USER: ((servicebroker.user))
-        CREDENTIALS: ((servicebroker.credentials))
-        SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
-    attempts: 2
-  - put: cf halfpipe-promote
-    resource: CF live pe live
-    params:
-      command: halfpipe-promote
-      manifestPath: git/manifest.yml
-      testDomain: live.cf.private.springer.com
-    attempts: 2
-  on_failure:
-    aggregate:
-    - put: slack-notification
-      params:
-        channel: '#ee-pass'
-        icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
-        text: The pipeline `$BUILD_PIPELINE_NAME` failed at `$BUILD_JOB_NAME`. <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
-        username: Halfpipe
-  ensure:
-    put: cf halfpipe-cleanup
-    resource: CF live pe live
-    params:
-      command: halfpipe-cleanup
-      manifestPath: git/manifest.yml
     attempts: 2
 

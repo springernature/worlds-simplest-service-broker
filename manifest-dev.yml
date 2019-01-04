@@ -16,3 +16,5 @@ applications:
     SERVICE_DESCRIPTION: Shared service for sending logs from CF DEV to ES in GCP
   instances: 1
   memory: 256M
+  services:
+    - pe-app-logging-gcp-elk-test
