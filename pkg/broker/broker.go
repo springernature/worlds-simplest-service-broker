@@ -127,14 +127,23 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
 	appId := details.AppGUID
 	envVarF2S := make(map[string]interface{})
     envVarF2S["F2S_DISABLE_LOGGING"]= "true"
-    client, _ := cfclient.NewClient(bkr.Cflogin)
-    appEnv, _ := client.GetAppEnv(appId)
+    client, err := cfclient.NewClient(bkr.Cflogin)
+    if err!=nil {
+    	return brokerapi.Binding{}, err
+	}
+    appEnv, err := client.GetAppEnv(appId)
+	if err!=nil {
+		return brokerapi.Binding{}, err
+	}
     for k, v := range appEnv.Environment {
     envVarF2S[k] = v
 	}
     aur := cfclient.AppUpdateResource{Environment: envVarF2S}
     updateResp, err := client.UpdateApp(appId, aur)
-    fmt.Println("AppID: ", appId, "updateResponse: ", updateResp, "error: ", err , "APP_ENV: ", appEnv.Environment)
+	fmt.Println("AppID: ", appId, "updateResponse: ", updateResp, "error: ", err , "APP_ENV: ", appEnv.Environment)
+	if err!=nil {
+		return brokerapi.Binding{}, err
+	}
 	json.Unmarshal(details.GetRawParameters(), &parameters)
 	bkr.Bindings[bindingID] = brokerapi.GetBindingSpec{
 		Credentials: bkr.Config.Credentials,
@@ -142,8 +151,8 @@ func (bkr *BrokerImpl) Bind(ctx context.Context, instanceID string, bindingID st
 	}
 	return brokerapi.Binding{
 		Credentials: bkr.Config.Credentials,
-		SyslogDrainURL: bkr.Config.SysLogDrainURL , 
-	}, nil
+		SyslogDrainURL: bkr.Config.SysLogDrainURL ,
+	}, err
 }
 
 func (bkr *BrokerImpl) Unbind(ctx context.Context, instanceID string, bindingID string, details brokerapi.UnbindDetails, asyncAllowed bool) (brokerapi.UnbindSpec, error) {
