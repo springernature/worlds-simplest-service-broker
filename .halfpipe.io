@@ -22,9 +22,9 @@ tasks:
     AUTH_PASSWORD: ((servicebroker.password))
     CREDENTIALS: ((servicebroker.credentials))
     SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
-    CF_API_ENDPOINT: ((servicebroker.cf_api))
-    CF_USER: ((servicebroker.cf_user))
-    CF_PASSWORD: ((servicebroker.cf_password))
+    CF_API_ENDPOINT: ((servicebroker.cf_dev_api))
+    CF_USER: ((servicebroker.cf_dev_user))
+    CF_PASSWORD: ((servicebroker.cf_dev_password))
 
 - type: deploy-cf
   name: Deploy test service broker to CF Dev
@@ -37,9 +37,9 @@ tasks:
     AUTH_PASSWORD: ((servicebroker.password))
     CREDENTIALS: ((servicebroker.credentials))
     SYSLOG_DRAIN_URL: ((servicebroker.syslog_url_test))
-    CF_API_ENDPOINT: ((servicebroker.cf_api))
-    CF_USER: ((servicebroker.cf_user))
-    CF_PASSWORD: ((servicebroker.cf_password))
+    CF_API_ENDPOINT: ((servicebroker.cf_dev_api))
+    CF_USER: ((servicebroker.cf_dev_user))
+    CF_PASSWORD: ((servicebroker.cf_dev_password))
 
 - type: deploy-cf
   name: Deploy to CF Live
@@ -52,6 +52,6 @@ tasks:
     AUTH_PASSWORD: ((servicebroker.password))
     CREDENTIALS: ((servicebroker.credentials))
     SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
-    CF_API_ENDPOINT: ((servicebroker.cf_api))
-    CF_USER: ((servicebroker.cf_user))
-    CF_PASSWORD: ((servicebroker.cf_password))
+    CF_API_ENDPOINT: ((servicebroker.cf_live_api))
+    CF_USER: ((servicebroker.cf_live_user))
+    CF_PASSWORD: ((servicebroker.cf_live_password))
