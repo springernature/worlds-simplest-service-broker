@@ -187,9 +187,9 @@ jobs:
       vars:
         AUTH_PASSWORD: ((servicebroker.password))
         AUTH_USER: ((servicebroker.user))
-        CF_API_ENDPOINT: ((servicebroker.cf_dev_api))
-        CF_PASSWORD: ((servicebroker.cf_dev_password))
-        CF_USER: ((servicebroker.cf_dev_user))
+        CF_API_ENDPOINT: ((servicebroker.cf_snpaas_api))
+        CF_PASSWORD: ((servicebroker.cf_snpaas_password))
+        CF_USER: ((servicebroker.cf_snpaas_user))
         CREDENTIALS: ((servicebroker.credentials))
         SYSLOG_DRAIN_URL: ((servicebroker.syslog_url_test))
     timeout: 1h
