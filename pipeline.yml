@@ -1,4 +1,4 @@
-# Generated using halfpipe cli version 1.74.0
+# Generated using halfpipe cli version 1.80.0
 groups: []
 resources:
 - name: git
@@ -17,25 +17,22 @@ resources:
     api: ((cloudfoundry.api-dev))
     org: pe
     password: ((cloudfoundry.password))
-    prometheusGatewayURL: prometheus-pushgateway:9091
     space: dev
     username: ((cloudfoundry.username))
-- name: CF dev pe dev (1)
+- name: CF snpaas engineering-enablement test
   type: cf-resource
   source:
-    api: ((cloudfoundry.api-dev))
-    org: pe
-    password: ((cloudfoundry.password))
-    prometheusGatewayURL: prometheus-pushgateway:9091
-    space: dev
-    username: ((cloudfoundry.username))
+    api: ((cloudfoundry.api-snpaas))
+    org: engineering-enablement
+    password: ((cloudfoundry.password-snpaas))
+    space: test
+    username: ((cloudfoundry.username-snpaas))
 - name: CF live pe live
   type: cf-resource
   source:
     api: ((cloudfoundry.api-live))
     org: pe
     password: ((cloudfoundry.password))
-    prometheusGatewayURL: prometheus-pushgateway:9091
     space: live
     username: ((cloudfoundry.username))
 resource_types:
@@ -56,6 +53,7 @@ jobs:
   - aggregate:
     - get: git
       trigger: true
+    timeout: 1h
   - task: Build the app
     privileged: true
     config:
@@ -92,7 +90,7 @@ jobs:
           export GIT_REVISION=`cat .git/ref`
 
           \docker login -u _json_key -p "$GCR_PRIVATE_KEY" https://eu.gcr.io
-          docker-compose run -e ARTIFACTORY_PASSWORD -e ARTIFACTORY_URL -e ARTIFACTORY_USERNAME -e GIT_REVISION -e HALFPIPE_CACHE_TEAM app
+          docker-compose  run -e ARTIFACTORY_PASSWORD -e ARTIFACTORY_URL -e ARTIFACTORY_USERNAME -e GIT_REVISION -e HALFPIPE_CACHE_TEAM -v /var/halfpipe/cache:/var/halfpipe/cache -v /var/halfpipe/shared-cache:/var/halfpipe/shared-cache app
 
           EXIT_STATUS=$?
           if [ $EXIT_STATUS != 0 ] ; then
@@ -104,6 +102,7 @@ jobs:
       caches:
       - path: ../../../var/halfpipe/cache
       - path: ../../../halfpipe-cache
+    timeout: 1h
     attempts: 1
   on_failure:
     aggregate:
@@ -121,6 +120,7 @@ jobs:
       passed:
       - Build the app
       trigger: true
+    timeout: 1h
   - put: cf halfpipe-push
     resource: CF dev pe dev
     params:
@@ -129,6 +129,7 @@ jobs:
       gitRefPath: git/.git/ref
       manifestPath: git/manifest-dev.yml
       testDomain: dev.cf.private.springer.com
+      timeout: 1h
       vars:
         AUTH_PASSWORD: ((servicebroker.password))
         AUTH_USER: ((servicebroker.user))
@@ -137,6 +138,7 @@ jobs:
         CF_USER: ((servicebroker.cf_dev_user))
         CREDENTIALS: ((servicebroker.credentials))
         SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
+    timeout: 1h
     attempts: 2
   - put: cf halfpipe-promote
     resource: CF dev pe dev
@@ -144,6 +146,8 @@ jobs:
       command: halfpipe-promote
       manifestPath: git/manifest-dev.yml
       testDomain: dev.cf.private.springer.com
+      timeout: 1h
+    timeout: 1h
     attempts: 2
   on_failure:
     aggregate:
@@ -159,6 +163,8 @@ jobs:
     params:
       command: halfpipe-cleanup
       manifestPath: git/manifest-dev.yml
+      timeout: 1h
+    timeout: 1h
     attempts: 2
 - name: Deploy test service broker to CF Dev
   serial: true
@@ -168,14 +174,16 @@ jobs:
       passed:
       - Deploy to CF Dev
       trigger: true
+    timeout: 1h
   - put: cf halfpipe-push
-    resource: CF dev pe dev (1)
+    resource: CF snpaas engineering-enablement test
     params:
       appPath: git
       command: halfpipe-push
       gitRefPath: git/.git/ref
       manifestPath: git/manifest-test.yml
-      testDomain: dev.cf.private.springer.com
+      testDomain: springernature.app
+      timeout: 1h
       vars:
         AUTH_PASSWORD: ((servicebroker.password))
         AUTH_USER: ((servicebroker.user))
@@ -184,13 +192,16 @@ jobs:
         CF_USER: ((servicebroker.cf_dev_user))
         CREDENTIALS: ((servicebroker.credentials))
         SYSLOG_DRAIN_URL: ((servicebroker.syslog_url_test))
+    timeout: 1h
     attempts: 2
   - put: cf halfpipe-promote
-    resource: CF dev pe dev (1)
+    resource: CF snpaas engineering-enablement test
     params:
       command: halfpipe-promote
       manifestPath: git/manifest-test.yml
-      testDomain: dev.cf.private.springer.com
+      testDomain: springernature.app
+      timeout: 1h
+    timeout: 1h
     attempts: 2
   on_failure:
     aggregate:
@@ -202,10 +213,12 @@ jobs:
         username: Halfpipe
   ensure:
     put: cf halfpipe-cleanup
-    resource: CF dev pe dev (1)
+    resource: CF snpaas engineering-enablement test
     params:
       command: halfpipe-cleanup
       manifestPath: git/manifest-test.yml
+      timeout: 1h
+    timeout: 1h
     attempts: 2
 - name: Deploy to CF Live
   serial: true
@@ -215,6 +228,7 @@ jobs:
       passed:
       - Deploy test service broker to CF Dev
       trigger: true
+    timeout: 1h
   - put: cf halfpipe-push
     resource: CF live pe live
     params:
@@ -223,6 +237,7 @@ jobs:
       gitRefPath: git/.git/ref
       manifestPath: git/manifest.yml
       testDomain: live.cf.private.springer.com
+      timeout: 1h
       vars:
         AUTH_PASSWORD: ((servicebroker.password))
         AUTH_USER: ((servicebroker.user))
@@ -231,6 +246,7 @@ jobs:
         CF_USER: ((servicebroker.cf_live_user))
         CREDENTIALS: ((servicebroker.credentials))
         SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
+    timeout: 1h
     attempts: 2
   - put: cf halfpipe-promote
     resource: CF live pe live
@@ -238,6 +254,8 @@ jobs:
       command: halfpipe-promote
       manifestPath: git/manifest.yml
       testDomain: live.cf.private.springer.com
+      timeout: 1h
+    timeout: 1h
     attempts: 2
   on_failure:
     aggregate:
@@ -253,5 +271,7 @@ jobs:
     params:
       command: halfpipe-cleanup
       manifestPath: git/manifest.yml
+      timeout: 1h
+    timeout: 1h
     attempts: 2
 

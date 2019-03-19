@@ -28,10 +28,10 @@ tasks:
 
 - type: deploy-cf
   name: Deploy test service broker to CF Dev
-  api: ((cloudfoundry.api-dev))
-  space: dev
+  api: ((cloudfoundry.api-snpaas))
+  space: test
   manifest: manifest-test.yml
-  org: pe
+  org: engineering-enablement
   vars:
     AUTH_USER: ((servicebroker.user))
     AUTH_PASSWORD: ((servicebroker.password))
