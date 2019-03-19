@@ -2,7 +2,7 @@ applications:
 - name: broker-logging-test
   disk_quota: 256M
   routes:
-  - route: broker-logging-test.dev.cf.springer-sbm.com
+  - route: broker-logging-test.springernature.app
   buildpacks:
   - go_buildpack
   stack: cflinuxfs2
