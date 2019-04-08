@@ -1,0 +1,18 @@
+applications:
+- name: rtr-logging-broker
+  disk_quota: 256M
+  routes:
+  - route: rtr-logging-broker.dev.cf.springer-sbm.com
+  buildpacks:
+  - go_buildpack
+  stack: cflinuxfs2
+  env:
+    GOPACKAGENAME: github.com/springernature/worlds-simplest-service-broker
+    GO_INSTALL_PACKAGE_SPEC: github.com/springernature/worlds-simplest-service-broker
+    BASE_GUID: F55C69BB-032A-4DAD-AAF0-8BB518D1D8F5
+    SERVICE_NAME: rtr-logging
+    SERVICE_PLAN_NAME: rtr-enabled
+    TAGS: simple,shared
+    SERVICE_DESCRIPTION: Shared service for sending logs from CF DEV to ES in GCP, with RTR enabled
+  instances: 2
+  memory: 256M
