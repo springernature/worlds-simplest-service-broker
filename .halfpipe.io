@@ -13,6 +13,7 @@ tasks:
 
 - type: deploy-cf
   name: Deploy to CF Dev
+  parallel: true
   api: ((cloudfoundry.api-dev))
   space: dev
   manifest: manifest-dev.yml
@@ -28,6 +29,7 @@ tasks:
 
 - type: deploy-cf
   name: Deploy to CF Dev with RTR
+  parallel: true
   api: ((cloudfoundry.api-dev))
   space: dev
   manifest: manifest-dev-rtr.yml
@@ -43,6 +45,7 @@ tasks:
 
 - type: deploy-cf
   name: Deploy test service broker to CF Dev
+  parallel: true
   api: ((cloudfoundry.api-snpaas))
   space: test
   manifest: manifest-test.yml

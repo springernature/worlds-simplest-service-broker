@@ -190,7 +190,7 @@ jobs:
   - aggregate:
     - get: git
       passed:
-      - Deploy to CF Dev
+      - Build the app
       trigger: true
     timeout: 1h
   - put: cf halfpipe-push
@@ -244,7 +244,7 @@ jobs:
   - aggregate:
     - get: git
       passed:
-      - Deploy to CF Dev with RTR
+      - Build the app
       trigger: true
     timeout: 1h
   - put: cf halfpipe-push
@@ -298,6 +298,8 @@ jobs:
   - aggregate:
     - get: git
       passed:
+      - Deploy to CF Dev
+      - Deploy to CF Dev with RTR
       - Deploy test service broker to CF Dev
       trigger: true
     timeout: 1h
