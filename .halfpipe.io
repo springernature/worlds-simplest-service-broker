@@ -78,7 +78,7 @@ tasks:
   name: Deploy to CF Live with RTR enabled
   api: ((cloudfoundry.api-live))
   space: live
-  manifest: manifest.yml
+  manifest: manifest-rtr.yml
   org: pe
   vars:
     AUTH_USER: ((servicebroker.user))

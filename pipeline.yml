@@ -363,7 +363,7 @@ jobs:
       appPath: git
       command: halfpipe-push
       gitRefPath: git/.git/ref
-      manifestPath: git/manifest.yml
+      manifestPath: git/manifest-rtr.yml
       testDomain: live.cf.private.springer.com
       timeout: 1h
       vars:
@@ -380,7 +380,7 @@ jobs:
     resource: CF live pe live (1)
     params:
       command: halfpipe-promote
-      manifestPath: git/manifest.yml
+      manifestPath: git/manifest-rtr.yml
       testDomain: live.cf.private.springer.com
       timeout: 1h
     timeout: 1h
@@ -398,7 +398,7 @@ jobs:
     resource: CF live pe live (1)
     params:
       command: halfpipe-cleanup
-      manifestPath: git/manifest.yml
+      manifestPath: git/manifest-rtr.yml
       timeout: 1h
     timeout: 1h
     attempts: 2
