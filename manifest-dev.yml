@@ -14,5 +14,5 @@ applications:
     SERVICE_PLAN_NAME: shared
     TAGS: simple,shared
     SERVICE_DESCRIPTION: Shared service for sending logs from CF DEV to ES in GCP
-  instances: 1
+  instances: 2
   memory: 256M
