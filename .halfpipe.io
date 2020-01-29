@@ -5,6 +5,9 @@ pipeline: ee-app-logging-servicebroker-onPrem
 triggers:
   - type: git
 
+feature_toggles:
+  - update-pipeline
+
 tasks:
 - type: docker-compose
   name: Build the app
@@ -42,21 +45,6 @@ tasks:
       CF_USER: ((servicebroker.cf_dev_user))
       CF_PASSWORD: ((servicebroker.cf_dev_password))
   
-  - type: deploy-cf
-    name: Deploy test service broker to CF Dev
-    api: ((cloudfoundry.api-snpaas))
-    space: test
-    manifest: manifest-test.yml
-    org: engineering-enablement
-    vars:
-      AUTH_USER: ((servicebroker.user))
-      AUTH_PASSWORD: ((servicebroker.password))
-      CREDENTIALS: ((servicebroker.credentials))
-      SYSLOG_DRAIN_URL: ((servicebroker.syslog_url_test))
-      CF_API_ENDPOINT: ((servicebroker.cf_snpaas_api))
-      CF_USER: ((servicebroker.cf_snpaas_user))
-      CF_PASSWORD: ((servicebroker.cf_snpaas_password))
-
 - type: deploy-cf
   name: Deploy to CF Live
   api: ((cloudfoundry.api-live))
