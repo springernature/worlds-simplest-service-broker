@@ -1,16 +1,17 @@
-# Generated using halfpipe cli version 3.0.0
-groups: []
+# Generated using halfpipe cli version 3.24.2
 resources:
 - name: git
   type: git
   source:
     branch: master
-    private_key: ((github.private_key))
+    private_key: ((halfpipe-github.private_key))
     uri: git@github.com:springernature/worlds-simplest-service-broker.git
-- name: slack-notification
-  type: slack-notification
+  check_every: 10m
+- name: slack
+  type: slack-resource
   source:
-    url: https://hooks.slack.com/services/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
+    url: ((halfpipe-slack.webhook))
+  check_every: 24h
 - name: CF dev pe dev
   type: cf-resource
   source:
@@ -19,14 +20,7 @@ resources:
     password: ((cloudfoundry.password))
     space: dev
     username: ((cloudfoundry.username))
-- name: CF dev pe dev (1)
-  type: cf-resource
-  source:
-    api: ((cloudfoundry.api-dev))
-    org: pe
-    password: ((cloudfoundry.password))
-    space: dev
-    username: ((cloudfoundry.username))
+  check_every: 24h
 - name: CF snpaas engineering-enablement test
   type: cf-resource
   source:
@@ -35,6 +29,7 @@ resources:
     password: ((cloudfoundry.password-snpaas))
     space: test
     username: ((cloudfoundry.username-snpaas))
+  check_every: 24h
 - name: CF live pe live
   type: cf-resource
   source:
@@ -43,34 +38,40 @@ resources:
     password: ((cloudfoundry.password))
     space: live
     username: ((cloudfoundry.username))
-- name: CF live pe live (1)
-  type: cf-resource
-  source:
-    api: ((cloudfoundry.api-live))
-    org: pe
-    password: ((cloudfoundry.password))
-    space: live
-    username: ((cloudfoundry.username))
+  check_every: 24h
 resource_types:
-- name: slack-notification
+- name: slack-resource
   type: registry-image
   source:
     repository: cfcommunity/slack-notification-resource
-    tag: v1.4.2
+    tag: v1.5.0
+  check_every: 24h
 - name: cf-resource
   type: registry-image
   source:
-    password: ((gcr.private_key))
+    password: ((halfpipe-gcr.private_key))
     repository: eu.gcr.io/halfpipe-io/cf-resource
     tag: stable
     username: _json_key
 jobs:
 - name: Build the app
   serial: true
+  on_failure:
+    in_parallel:
+      steps:
+      - put: slack
+        params:
+          channel: '#ee-pass'
+          icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
+          text: Pipeline `$BUILD_PIPELINE_NAME`, task `$BUILD_JOB_NAME` failed <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
+          username: Halfpipe
   plan:
-  - aggregate:
-    - get: git
-      trigger: true
+  - in_parallel:
+      steps:
+      - get: git
+        trigger: true
+        attempts: 2
+      fail_fast: true
     timeout: 1h
   - task: Build the app
     privileged: true
@@ -79,7 +80,7 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          password: ((gcr.private_key))
+          password: ((halfpipe-gcr.private_key))
           repository: eu.gcr.io/halfpipe-io/halfpipe-docker-compose
           tag: stable
           username: _json_key
@@ -87,7 +88,7 @@ jobs:
         ARTIFACTORY_PASSWORD: ((artifactory.password))
         ARTIFACTORY_URL: ((artifactory.url))
         ARTIFACTORY_USERNAME: ((artifactory.username))
-        GCR_PRIVATE_KEY: ((gcr.private_key))
+        GCR_PRIVATE_KEY: ((halfpipe-gcr.private_key))
         HALFPIPE_CACHE_TEAM: engineering-enablement
       run:
         path: docker.sh
@@ -122,22 +123,35 @@ jobs:
       - path: ../../../halfpipe-cache
     timeout: 1h
     attempts: 1
-  on_failure:
-    aggregate:
-    - put: slack-notification
-      params:
-        channel: '#ee-pass'
-        icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
-        text: The pipeline `$BUILD_PIPELINE_NAME` failed at `$BUILD_JOB_NAME`. <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
-        username: Halfpipe
 - name: Deploy to CF Dev
   serial: true
+  on_failure:
+    in_parallel:
+      steps:
+      - put: slack
+        params:
+          channel: '#ee-pass'
+          icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
+          text: Pipeline `$BUILD_PIPELINE_NAME`, task `$BUILD_JOB_NAME` failed <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
+          username: Halfpipe
+  ensure:
+    put: cf halfpipe-cleanup
+    resource: CF dev pe dev
+    params:
+      command: halfpipe-cleanup
+      manifestPath: git/manifest-dev.yml
+      timeout: 1h
+    timeout: 1h
+    attempts: 2
   plan:
-  - aggregate:
-    - get: git
-      passed:
-      - Build the app
-      trigger: true
+  - in_parallel:
+      steps:
+      - get: git
+        passed:
+        - Build the app
+        trigger: true
+        attempts: 2
+      fail_fast: true
     timeout: 1h
   - put: cf halfpipe-push
     resource: CF dev pe dev
@@ -158,6 +172,14 @@ jobs:
         SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
     timeout: 1h
     attempts: 2
+  - put: cf halfpipe-check
+    resource: CF dev pe dev
+    params:
+      command: halfpipe-check
+      manifestPath: git/manifest-dev.yml
+      timeout: 1h
+    timeout: 1h
+    attempts: 2
   - put: cf halfpipe-promote
     resource: CF dev pe dev
     params:
@@ -167,34 +189,38 @@ jobs:
       timeout: 1h
     timeout: 1h
     attempts: 2
+- name: Deploy to CF Dev with RTR
+  serial: true
   on_failure:
-    aggregate:
-    - put: slack-notification
-      params:
-        channel: '#ee-pass'
-        icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
-        text: The pipeline `$BUILD_PIPELINE_NAME` failed at `$BUILD_JOB_NAME`. <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
-        username: Halfpipe
+    in_parallel:
+      steps:
+      - put: slack
+        params:
+          channel: '#ee-pass'
+          icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
+          text: Pipeline `$BUILD_PIPELINE_NAME`, task `$BUILD_JOB_NAME` failed <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
+          username: Halfpipe
   ensure:
     put: cf halfpipe-cleanup
     resource: CF dev pe dev
     params:
       command: halfpipe-cleanup
-      manifestPath: git/manifest-dev.yml
+      manifestPath: git/manifest-dev-rtr.yml
       timeout: 1h
     timeout: 1h
     attempts: 2
-- name: Deploy to CF Dev with RTR
-  serial: true
   plan:
-  - aggregate:
-    - get: git
-      passed:
-      - Build the app
-      trigger: true
+  - in_parallel:
+      steps:
+      - get: git
+        passed:
+        - Build the app
+        trigger: true
+        attempts: 2
+      fail_fast: true
     timeout: 1h
   - put: cf halfpipe-push
-    resource: CF dev pe dev (1)
+    resource: CF dev pe dev
     params:
       appPath: git
       command: halfpipe-push
@@ -212,8 +238,16 @@ jobs:
         SYSLOG_DRAIN_URL: ((servicebroker.syslog_url_rtr))
     timeout: 1h
     attempts: 2
+  - put: cf halfpipe-check
+    resource: CF dev pe dev
+    params:
+      command: halfpipe-check
+      manifestPath: git/manifest-dev-rtr.yml
+      timeout: 1h
+    timeout: 1h
+    attempts: 2
   - put: cf halfpipe-promote
-    resource: CF dev pe dev (1)
+    resource: CF dev pe dev
     params:
       command: halfpipe-promote
       manifestPath: git/manifest-dev-rtr.yml
@@ -221,31 +255,35 @@ jobs:
       timeout: 1h
     timeout: 1h
     attempts: 2
+- name: Deploy test service broker to CF Dev
+  serial: true
   on_failure:
-    aggregate:
-    - put: slack-notification
-      params:
-        channel: '#ee-pass'
-        icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
-        text: The pipeline `$BUILD_PIPELINE_NAME` failed at `$BUILD_JOB_NAME`. <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
-        username: Halfpipe
+    in_parallel:
+      steps:
+      - put: slack
+        params:
+          channel: '#ee-pass'
+          icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
+          text: Pipeline `$BUILD_PIPELINE_NAME`, task `$BUILD_JOB_NAME` failed <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
+          username: Halfpipe
   ensure:
     put: cf halfpipe-cleanup
-    resource: CF dev pe dev (1)
+    resource: CF snpaas engineering-enablement test
     params:
       command: halfpipe-cleanup
-      manifestPath: git/manifest-dev-rtr.yml
+      manifestPath: git/manifest-test.yml
       timeout: 1h
     timeout: 1h
     attempts: 2
-- name: Deploy test service broker to CF Dev
-  serial: true
   plan:
-  - aggregate:
-    - get: git
-      passed:
-      - Build the app
-      trigger: true
+  - in_parallel:
+      steps:
+      - get: git
+        passed:
+        - Build the app
+        trigger: true
+        attempts: 2
+      fail_fast: true
     timeout: 1h
   - put: cf halfpipe-push
     resource: CF snpaas engineering-enablement test
@@ -266,6 +304,14 @@ jobs:
         SYSLOG_DRAIN_URL: ((servicebroker.syslog_url_test))
     timeout: 1h
     attempts: 2
+  - put: cf halfpipe-check
+    resource: CF snpaas engineering-enablement test
+    params:
+      command: halfpipe-check
+      manifestPath: git/manifest-test.yml
+      timeout: 1h
+    timeout: 1h
+    attempts: 2
   - put: cf halfpipe-promote
     resource: CF snpaas engineering-enablement test
     params:
@@ -275,33 +321,37 @@ jobs:
       timeout: 1h
     timeout: 1h
     attempts: 2
+- name: Deploy to CF Live
+  serial: true
   on_failure:
-    aggregate:
-    - put: slack-notification
-      params:
-        channel: '#ee-pass'
-        icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
-        text: The pipeline `$BUILD_PIPELINE_NAME` failed at `$BUILD_JOB_NAME`. <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
-        username: Halfpipe
+    in_parallel:
+      steps:
+      - put: slack
+        params:
+          channel: '#ee-pass'
+          icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
+          text: Pipeline `$BUILD_PIPELINE_NAME`, task `$BUILD_JOB_NAME` failed <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
+          username: Halfpipe
   ensure:
     put: cf halfpipe-cleanup
-    resource: CF snpaas engineering-enablement test
+    resource: CF live pe live
     params:
       command: halfpipe-cleanup
-      manifestPath: git/manifest-test.yml
+      manifestPath: git/manifest.yml
       timeout: 1h
     timeout: 1h
     attempts: 2
-- name: Deploy to CF Live
-  serial: true
   plan:
-  - aggregate:
-    - get: git
-      passed:
-      - Deploy to CF Dev
-      - Deploy to CF Dev with RTR
-      - Deploy test service broker to CF Dev
-      trigger: true
+  - in_parallel:
+      steps:
+      - get: git
+        passed:
+        - Deploy to CF Dev
+        - Deploy to CF Dev with RTR
+        - Deploy test service broker to CF Dev
+        trigger: true
+        attempts: 2
+      fail_fast: true
     timeout: 1h
   - put: cf halfpipe-push
     resource: CF live pe live
@@ -322,6 +372,14 @@ jobs:
         SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
     timeout: 1h
     attempts: 2
+  - put: cf halfpipe-check
+    resource: CF live pe live
+    params:
+      command: halfpipe-check
+      manifestPath: git/manifest.yml
+      timeout: 1h
+    timeout: 1h
+    attempts: 2
   - put: cf halfpipe-promote
     resource: CF live pe live
     params:
@@ -331,34 +389,38 @@ jobs:
       timeout: 1h
     timeout: 1h
     attempts: 2
+- name: Deploy to CF Live with RTR enabled
+  serial: true
   on_failure:
-    aggregate:
-    - put: slack-notification
-      params:
-        channel: '#ee-pass'
-        icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
-        text: The pipeline `$BUILD_PIPELINE_NAME` failed at `$BUILD_JOB_NAME`. <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
-        username: Halfpipe
+    in_parallel:
+      steps:
+      - put: slack
+        params:
+          channel: '#ee-pass'
+          icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
+          text: Pipeline `$BUILD_PIPELINE_NAME`, task `$BUILD_JOB_NAME` failed <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
+          username: Halfpipe
   ensure:
     put: cf halfpipe-cleanup
     resource: CF live pe live
     params:
       command: halfpipe-cleanup
-      manifestPath: git/manifest.yml
+      manifestPath: git/manifest-rtr.yml
       timeout: 1h
     timeout: 1h
     attempts: 2
-- name: Deploy to CF Live with RTR enabled
-  serial: true
   plan:
-  - aggregate:
-    - get: git
-      passed:
-      - Deploy to CF Live
-      trigger: true
+  - in_parallel:
+      steps:
+      - get: git
+        passed:
+        - Deploy to CF Live
+        trigger: true
+        attempts: 2
+      fail_fast: true
     timeout: 1h
   - put: cf halfpipe-push
-    resource: CF live pe live (1)
+    resource: CF live pe live
     params:
       appPath: git
       command: halfpipe-push
@@ -376,29 +438,20 @@ jobs:
         SYSLOG_DRAIN_URL: ((servicebroker.syslog_url_rtr))
     timeout: 1h
     attempts: 2
+  - put: cf halfpipe-check
+    resource: CF live pe live
+    params:
+      command: halfpipe-check
+      manifestPath: git/manifest-rtr.yml
+      timeout: 1h
+    timeout: 1h
+    attempts: 2
   - put: cf halfpipe-promote
-    resource: CF live pe live (1)
+    resource: CF live pe live
     params:
       command: halfpipe-promote
       manifestPath: git/manifest-rtr.yml
       testDomain: live.cf.private.springer.com
-      timeout: 1h
-    timeout: 1h
-    attempts: 2
-  on_failure:
-    aggregate:
-    - put: slack-notification
-      params:
-        channel: '#ee-pass'
-        icon_url: https://concourse.halfpipe.io/public/images/favicon-failed.png
-        text: The pipeline `$BUILD_PIPELINE_NAME` failed at `$BUILD_JOB_NAME`. <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME>
-        username: Halfpipe
-  ensure:
-    put: cf halfpipe-cleanup
-    resource: CF live pe live (1)
-    params:
-      command: halfpipe-cleanup
-      manifestPath: git/manifest-rtr.yml
       timeout: 1h
     timeout: 1h
     attempts: 2
