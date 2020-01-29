@@ -45,32 +45,34 @@ tasks:
       CF_USER: ((servicebroker.cf_dev_user))
       CF_PASSWORD: ((servicebroker.cf_dev_password))
   
-- type: deploy-cf
-  name: Deploy to CF Live
-  api: ((cloudfoundry.api-live))
-  space: live
-  manifest: manifest.yml
-  org: pe
-  vars:
-    AUTH_USER: ((servicebroker.user))
-    AUTH_PASSWORD: ((servicebroker.password))
-    CREDENTIALS: ((servicebroker.credentials))
-    SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
-    CF_API_ENDPOINT: ((servicebroker.cf_live_api))
-    CF_USER: ((servicebroker.cf_live_user))
-    CF_PASSWORD: ((servicebroker.cf_live_password))
-
-- type: deploy-cf
-  name: Deploy to CF Live with RTR enabled
-  api: ((cloudfoundry.api-live))
-  space: live
-  manifest: manifest-rtr.yml
-  org: pe
-  vars:
-    AUTH_USER: ((servicebroker.user))
-    AUTH_PASSWORD: ((servicebroker.password))
-    CREDENTIALS: ((servicebroker.credentials))
-    SYSLOG_DRAIN_URL: ((servicebroker.syslog_url_rtr))
-    CF_API_ENDPOINT: ((servicebroker.cf_live_api))
-    CF_USER: ((servicebroker.cf_live_user))
-    CF_PASSWORD: ((servicebroker.cf_live_password))
+- type: parallel
+  tasks:
+  - type: deploy-cf
+    name: Deploy to CF Live
+    api: ((cloudfoundry.api-live))
+    space: live
+    manifest: manifest.yml
+    org: pe
+    vars:
+      AUTH_USER: ((servicebroker.user))
+      AUTH_PASSWORD: ((servicebroker.password))
+      CREDENTIALS: ((servicebroker.credentials))
+      SYSLOG_DRAIN_URL: ((servicebroker.syslog_url))
+      CF_API_ENDPOINT: ((servicebroker.cf_live_api))
+      CF_USER: ((servicebroker.cf_live_user))
+      CF_PASSWORD: ((servicebroker.cf_live_password))
+  
+  - type: deploy-cf
+    name: Deploy to CF Live with RTR enabled
+    api: ((cloudfoundry.api-live))
+    space: live
+    manifest: manifest-rtr.yml
+    org: pe
+    vars:
+      AUTH_USER: ((servicebroker.user))
+      AUTH_PASSWORD: ((servicebroker.password))
+      CREDENTIALS: ((servicebroker.credentials))
+      SYSLOG_DRAIN_URL: ((servicebroker.syslog_url_rtr))
+      CF_API_ENDPOINT: ((servicebroker.cf_live_api))
+      CF_USER: ((servicebroker.cf_live_user))
+      CF_PASSWORD: ((servicebroker.cf_live_password))
